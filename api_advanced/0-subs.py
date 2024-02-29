@@ -1,16 +1,20 @@
 #!/usr/bin/python3
-"""Script that fetch 10 hot post for a given subreddit."""
+"""
+function that queries the 'Reddit API' and returns the number of subscribers
+"""
 import requests
 
 
 def number_of_subscribers(subreddit):
-    """Return the number of subscribers for the given subreddit."""
-    url = f"https://www.reddit.com/r/{subreddit}/about.json"
-    headers = {'User-Agent': 'My User Agent 1.0'}
+    """
+    number of subscribers
+    """
+    url = "https://www.reddit.com/r/{}/about.json".format(subreddit)
+    headers = {"User-Agent": "Mozilla/5.0"}  # avoid Too Many Requests error
     response = requests.get(url, headers=headers, allow_redirects=False)
 
     if response.status_code == 200:
-        data = response.json().get('data')
-        if data:
-            return data.get('subscribers', 0)
-    return 0
+        data = response.json()["data"]
+        return data["subscribers"]
+    else:
+        return 0

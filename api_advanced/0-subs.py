@@ -1,33 +1,32 @@
 #!/usr/bin/python3
+"""
+Returns the number of subscribers from a subreddit
+"""
 import requests
 
-def get_emp_todo(emp_id):
-    TODO_URL = f"https://jsonplaceholder.typicode.com/users/{emp_id}/todos"
-    USER_URL = f"https://jsonplaceholder.typicode.com/users/{emp_id}"
-    
-    # Get the JSON of TODOS - DONE
-    # Get TOTAL NUMBER of todos - DONE
-    # Get COMPLETED NUMBER of todos - DONE
-    # Get THE NAME of the employee - DONE 
 
-    # GET THE TITLES OF THE COMPLETED TASKS
-    # AND PRINT THEM ALL OUT ON STDOUT
-    # EACH TASKS SHOULD BE PRINTED ON A NEW LINE
+def number_of_subscribers(subreddit):
+    """ Set a custom header user-agent """
+    headers = {"User-Agent": "ALU-scripting API 0.1"}
+    url = "https://www.reddit.com/r/{}.json".format(subreddit)
 
+    try:
+        response = requests.get(url, headers=headers,
+                                timeout=30, allow_redirects=False)
 
-    emp_todos = requests.get(TODO_URL).json()
-    emp_name = requests.get(USER_URL).json()["name"]
-    emp_total_todos = len(emp_todos)
-    emp_completed_todos = 0
-    todo_titles = []
+    except requests.exceptions.Timeout:
+        return "The request Timed out"
 
-    for todo in emp_todos:
-        if todo["completed"] is True:
-            todo_titles.append(todo["title"])
-            emp_completed_todos += 1
-    print(f"Employee {emp_name} From total todos of {emp_total_todos}, {emp_completed_todos} tasks have been done")
-
-    for todo_title in todo_titles:
-        print(todo_title)
-
-get_emp_todo(1)
+    if response.status_code == 200:
+        json_data = response.json()
+        subscriber_number = (
+            json_data.get("data")
+            .get("children")[0]
+            .get("data")
+            .get("subreddit_subscribers")
+        )
+        return subscriber_number
+    elif response.status_code == 404:
+        return 0
+    else:
+        return 0
